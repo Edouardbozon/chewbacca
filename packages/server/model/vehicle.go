@@ -9,7 +9,7 @@ type Vehicle struct {
 	Model                string       `json:"model"`
 	Manufacturer         string       `json:"manufacturer"`
 	CostInCredits        string       `json:"cost_in_credits"`
-	Length               string       `json:"length"`
+	Length               int          `json:"length"`
 	MaxAtmospheringSpeed string       `json:"max_atmosphering_speed"`
 	Crew                 string       `json:"crew"`
 	Passengers           string       `json:"passengers"`
@@ -17,12 +17,41 @@ type Vehicle struct {
 	Consumables          string       `json:"consumables"`
 	VehicleClass         string       `json:"vehicle_class"`
 	PilotURLs            []vehicleURL `json:"pilots"`
-	Created              string       `json:"created"`
-	Edited               string       `json:"edited"`
+	Created              bool         `json:"created"`
+	Edited               bool         `json:"edited"`
 	URL                  string       `json:"url"`
 }
 
 type vehicleURL string
+
+// VehiclesCreateQuery create vehicles table
+const VehiclesCreateQuery = `
+	DROP TABLE IF EXISTS vehicles;
+	CREATE TABLE vehicles (
+		id SERIAL,
+
+		name TEXT UNIQUE NOT NULL,
+		model TEXT NOT NULL,
+		manufacturer TEXT NOT NULL,
+		cost_in_credits TEXT NOT NULL,
+		length INT NOT NULL,
+		max_atmosphering_speed TEXT NOT NULL,
+		crew TEXT NOT NULL,
+		passengers TEXT NOT NULL,
+		cargo_capacity TEXT NOT NULL,
+		consumables TEXT NOT NULL,
+		vehicle_class TEXT NOT NULL,
+		pilot_urls 
+		pilots TEXT NOT NULL,
+		created boolean DEFAULT FALSE
+		edited boolean DEFAULT FALSE
+		url TEXT NOT NULL,
+
+		PRIMARY KEY (id),
+		FOREIGN KEY (pilot_urls) REFERENCES books(id) ON DELETE CASCADE,
+		UNIQUE (url)
+	);
+`
 
 // getVehicle retrieves the vehicle with the given id
 func (vehicle *Vehicle) getVehicle(db *sql.DB) error {
