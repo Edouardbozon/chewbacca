@@ -6,9 +6,9 @@ services:
     image: chewbacca-server
     restart: always
     environment:
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgres
-      DB_NAME: postgres
+      APP_DB_USERNAME: postgres
+      APP_DB_PASSWORD: postgres
+      APP_DB_NAME: postgres
 
   db:
     image: postgres

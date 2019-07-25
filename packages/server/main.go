@@ -2,17 +2,16 @@ package main
 
 import (
 	"os"
-
-	"./app"
 )
 
 func main() {
-	a := app.App{}
+	a := App{}
 	a.Initialize(
-		os.Getenv("DB_USERNAME"),
-		os.Getenv("DB_PASSWORD"),
-		os.Getenv("DB_NAME"),
+		os.Getenv("APP_DB_USERNAME"),
+		os.Getenv("APP_DB_PASSWORD"),
+		os.Getenv("APP_DB_NAME"),
 	)
 
-	a.Run(":8080")
+	port := ":8080"
+	a.Run(port)
 }
