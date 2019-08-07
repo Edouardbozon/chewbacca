@@ -1,62 +1,57 @@
-package model
+package main
 
 import "database/sql"
 
 // A Vehicle is a single transport craft that does not have hyperdrive capability.
 type Vehicle struct {
-	ID                   string       `json:id`
-	Name                 string       `json:"name"`
-	Model                string       `json:"model"`
-	Manufacturer         string       `json:"manufacturer"`
-	CostInCredits        string       `json:"cost_in_credits"`
-	Length               int          `json:"length"`
-	MaxAtmospheringSpeed string       `json:"max_atmosphering_speed"`
-	Crew                 string       `json:"crew"`
-	Passengers           string       `json:"passengers"`
-	CargoCapacity        string       `json:"cargo_capacity"`
-	Consumables          string       `json:"consumables"`
-	VehicleClass         string       `json:"vehicle_class"`
-	PilotURLs            []vehicleURL `json:"pilots"`
-	Created              bool         `json:"created"`
-	Edited               bool         `json:"edited"`
-	URL                  string       `json:"url"`
+	ID                   int            `json:"id"`
+	Name                 string         `json:"name"`
+	Model                string         `json:"model"`
+	Manufacturer         string         `json:"manufacturer"`
+	CostInCredits        string         `json:"cost_in_credits"`
+	Length               int            `json:"length"`
+	MaxAtmospheringSpeed string         `json:"max_atmosphering_speed"`
+	Crew                 string         `json:"crew"`
+	Passengers           string         `json:"passengers"`
+	CargoCapacity        string         `json:"cargo_capacity"`
+	Consumables          string         `json:"consumables"`
+	VehicleClass         string         `json:"vehicle_class"`
+	PilotURLs            []characterURL `json:"pilots"`
+	Created              bool           `json:"created"`
+	Edited               bool           `json:"edited"`
+	URL                  string         `json:"url"`
 }
 
 type vehicleURL string
-
-// VehiclesCreateQuery create vehicles table
-const VehiclesCreateQuery = `
-	DROP TABLE IF EXISTS vehicles;
-	CREATE TABLE vehicles (
-		id SERIAL,
-
-		name TEXT UNIQUE NOT NULL,
-		model TEXT NOT NULL,
-		manufacturer TEXT NOT NULL,
-		cost_in_credits TEXT NOT NULL,
-		length INT NOT NULL,
-		max_atmosphering_speed TEXT NOT NULL,
-		crew TEXT NOT NULL,
-		passengers TEXT NOT NULL,
-		cargo_capacity TEXT NOT NULL,
-		consumables TEXT NOT NULL,
-		vehicle_class TEXT NOT NULL,
-		pilot_urls 
-		pilots TEXT NOT NULL,
-		created boolean DEFAULT FALSE
-		edited boolean DEFAULT FALSE
-		url TEXT NOT NULL,
-
-		PRIMARY KEY (id),
-		FOREIGN KEY (pilot_urls) REFERENCES books(id) ON DELETE CASCADE,
-		UNIQUE (url)
-	);
-`
 
 // getVehicle retrieves the vehicle with the given id
 func (vehicle *Vehicle) getVehicle(db *sql.DB) error {
 	return db.QueryRow("SELECT * FROM vehicles WHERE id=$1",
 		vehicle.ID).Scan(&vehicle.ID)
+}
+
+func getVehicles(db *sql.DB, start int, count int) ([]Vehicle, error) {
+	rows, err := db.Query(
+		"SELECT * FROM vehicles LIMIT $1 OFFSET $2",
+		count, start)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	vehicles := []Vehicle{}
+
+	for rows.Next() {
+		var vehicle Vehicle
+		if err := rows.Scan(); err != nil {
+			return nil, err
+		}
+		vehicles = append(vehicles, vehicle)
+	}
+
+	return vehicles, nil
 }
 
 // updateVehicle update the vehicle with the given id
