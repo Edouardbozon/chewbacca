@@ -8,24 +8,18 @@ Example app written using Go and React.
 * Go 1.10.x
 * Docker CE 18.09.x
 
-### Start
+### Run the app
 
-Build server image
-
-```
-docker build -t chewbacca-server ./packages/server/
-```
-
-Build client image
+Build docker images
 
 ```
-docker build -t chewbacca-client ./packages/client/
+make build
 ```
 
-Start everything
+Start containers
 
 ```bash
-docker-compose up
+make start
 ```
 
-Browse to [localhost:8080](http://localhost:8080)
+Browse to [localhost:8080](http://localhost:8080) :rainbow:
