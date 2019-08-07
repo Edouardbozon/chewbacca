@@ -1,6 +1,6 @@
 # Chewbacca
 
-Example app written with Go and React.
+Example app written using Go and React.
 
 ### Prerequisites
 
@@ -27,3 +27,5 @@ Start everything
 ```bash
 docker-compose up
 ```
+
+Browse to [localhost:8080](http://localhost:8080)
