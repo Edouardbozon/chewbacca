@@ -1,36 +1,21 @@
-package main
+package postgres
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
-// A Vehicle is a single transport craft that does not have hyperdrive capability.
-type Vehicle struct {
-	ID                   int            `json:"id"`
-	Name                 string         `json:"name"`
-	Model                string         `json:"model"`
-	Manufacturer         string         `json:"manufacturer"`
-	CostInCredits        string         `json:"cost_in_credits"`
-	Length               int            `json:"length"`
-	MaxAtmospheringSpeed string         `json:"max_atmosphering_speed"`
-	Crew                 string         `json:"crew"`
-	Passengers           string         `json:"passengers"`
-	CargoCapacity        string         `json:"cargo_capacity"`
-	Consumables          string         `json:"consumables"`
-	VehicleClass         string         `json:"vehicle_class"`
-	PilotURLs            []characterURL `json:"pilots"`
-	Created              bool           `json:"created"`
-	Edited               bool           `json:"edited"`
-	URL                  string         `json:"url"`
+// VehicleService represents a PostgreSQL implementation of app.VehicleService.
+type VehicleService struct {
+	DB *sql.DB
 }
-
-type vehicleURL string
 
 // getVehicle retrieves the vehicle with the given id
-func (vehicle *Vehicle) getVehicle(db *sql.DB) error {
+func (v *VehicleService) getVehicle(id int) (*app.Vehicle, error) {
 	return db.QueryRow("SELECT * FROM vehicles WHERE id=$1",
-		vehicle.ID).Scan(&vehicle.ID)
+		v.).Scan(&vehicle.ID)
 }
 
-func getVehicles(db *sql.DB, start int, count int) ([]Vehicle, error) {
+func (v *VehicleService) getVehicles(db *sql.DB, start int, count int) ([]Vehicle, error) {
 	rows, err := db.Query(
 		"SELECT * FROM vehicles LIMIT $1 OFFSET $2",
 		count, start)
@@ -55,7 +40,7 @@ func getVehicles(db *sql.DB, start int, count int) ([]Vehicle, error) {
 }
 
 // updateVehicle update the vehicle with the given id
-func (vehicle *Vehicle) updateVehicle(db *sql.DB) error {
+func (v *VehicleService) updateVehicle(db *sql.DB) error {
 	_, err :=
 		db.Exec(`
 		UPDATE vehicles SET
@@ -97,14 +82,14 @@ func (vehicle *Vehicle) updateVehicle(db *sql.DB) error {
 }
 
 // deleteVehicle update the vehicle with the given id
-func (vehicle *Vehicle) deleteVehicle(db *sql.DB) error {
+func (v *VehicleService) deleteVehicle(db *sql.DB) error {
 	_, err := db.Exec("DELETE FROM vehicles WHERE id=$1", vehicle.ID)
 
 	return err
 }
 
 // createVehicle create a vehicle
-func (vehicle *Vehicle) createVehicle(db *sql.DB) error {
+func (v *VehicleService) createVehicle(db *sql.DB) error {
 	err := db.QueryRow(
 		`INSERT INTO vehicles(
 			name,

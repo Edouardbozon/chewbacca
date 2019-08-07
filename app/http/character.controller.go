@@ -1,4 +1,4 @@
-package main
+package character
 
 import (
 	"database/sql"
@@ -9,7 +9,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func (a *App) getVehicles(w http.ResponseWriter, r *http.Request) {
+func getCharacters(w http.ResponseWriter, r *http.Request) {
 	count, _ := strconv.Atoi(r.FormValue("count"))
 	start, _ := strconv.Atoi(r.FormValue("start"))
 
@@ -20,89 +20,89 @@ func (a *App) getVehicles(w http.ResponseWriter, r *http.Request) {
 		start = 0
 	}
 
-	vehicles, err := getVehicles(a.DB, start, count)
+	characters, err := getCharacters(a.DB, start, count)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, vehicles)
+	respondWithJSON(w, http.StatusOK, characters)
 }
 
-func (a *App) createVehicle(w http.ResponseWriter, r *http.Request) {
-	var vehicle Vehicle
+func createCharacter(w http.ResponseWriter, r *http.Request) {
+	var character Character
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&vehicle); err != nil {
+	if err := decoder.Decode(&character); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 	defer r.Body.Close()
 
-	if err := vehicle.createVehicle(a.DB); err != nil {
+	if err := character.createCharacter(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusCreated, vehicle)
+	respondWithJSON(w, http.StatusCreated, character)
 }
 
-func (a *App) getVehicle(w http.ResponseWriter, r *http.Request) {
+func getCharacter(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid vehicle ID")
+		respondWithError(w, http.StatusBadRequest, "Invalid character ID")
 		return
 	}
 
-	vehicle := Vehicle{ID: id}
-	if err := vehicle.getVehicle(a.DB); err != nil {
+	character := Character{ID: id}
+	if err := character.getCharacter(a.DB); err != nil {
 		switch err {
 		case sql.ErrNoRows:
-			respondWithError(w, http.StatusNotFound, "Vehicle not found")
+			respondWithError(w, http.StatusNotFound, "Character not found")
 		default:
 			respondWithError(w, http.StatusInternalServerError, err.Error())
 		}
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, vehicle)
+	respondWithJSON(w, http.StatusOK, character)
 }
 
-func (a *App) updateVehicle(w http.ResponseWriter, r *http.Request) {
+func updateCharacter(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid vehicle ID")
+		respondWithError(w, http.StatusBadRequest, "Invalid character ID")
 		return
 	}
 
-	var vehicle Vehicle
+	var character Character
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&vehicle); err != nil {
+	if err := decoder.Decode(&character); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid resquest payload")
 		return
 	}
 	defer r.Body.Close()
-	vehicle.ID = id
+	character.ID = id
 
-	if err := vehicle.updateVehicle(a.DB); err != nil {
+	if err := character.updateCharacter(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, vehicle)
+	respondWithJSON(w, http.StatusOK, character)
 }
 
-func (a *App) deleteVehicle(w http.ResponseWriter, r *http.Request) {
+func deleteCharacter(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid Vehicle ID")
+		respondWithError(w, http.StatusBadRequest, "Invalid Character ID")
 		return
 	}
 
-	vehicle := Vehicle{ID: id}
-	if err := vehicle.deleteVehicle(a.DB); err != nil {
+	character := Character{ID: id}
+	if err := character.deleteCharacter(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

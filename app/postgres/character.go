@@ -1,26 +1,13 @@
-package main
+package postgres
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
-// A Character is an individual person or character within the Star Wars universe.
-type Character struct {
-	ID          int          `json:"id"`
-	Name        string       `json:"name"`
-	Height      int          `json:"height"`
-	Mass        int          `json:"mass"`
-	HairColor   string       `json:"hair_color"`
-	SkinColor   string       `json:"skin_color"`
-	EyeColor    string       `json:"eye_color"`
-	BirthYear   string       `json:"birth_year"`
-	Gender      string       `json:"gender"`
-	Homeworld   string       `json:"homeworld"`
-	VehicleURLs []vehicleURL `json:"vehicles"`
-	Created     bool         `json:"created"`
-	Edited      bool         `json:"edited"`
-	URL         string       `json:"url"`
+// CharacterService represents a PostgreSQL implementation of app.CharacterService.
+type CharacterService struct {
+	DB *sql.DB
 }
-
-type characterURL string
 
 // getCharacter retrieves the character with the given id
 func (character *Character) getCharacter(db *sql.DB) error {
@@ -28,7 +15,7 @@ func (character *Character) getCharacter(db *sql.DB) error {
 		character.ID).Scan(&character.ID)
 }
 
-func getCharacters(db *sql.DB, start int, count int) ([]Character, error) {
+func (character *Character) getCharacters(db *sql.DB, start int, count int) ([]Character, error) {
 	rows, err := db.Query(
 		"SELECT * FROM characters LIMIT $1 OFFSET $2",
 		count, start)

@@ -1,5 +1,5 @@
 build:
-	docker build -t chewbacca-server ./packages/server/
+	docker build -t chewbacca-server .
 
 start:
 	docker-compose up
