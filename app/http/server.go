@@ -26,11 +26,6 @@ func NewServer() *Server {
 
 // ListenAndServe start the server
 func (s *Server) ListenAndServe() {
-	router := s.Handler.Router
-	srv := &http.Server{
-		Handler: router,
-	}
-
-	http.Handle("/", router)
-	log.Fatal(srv.ListenAndServe())
+	log.Printf("Listening %s", s.Addr)
+	log.Fatal(http.ListenAndServe(s.Addr, s.Handler.Router))
 }

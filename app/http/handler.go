@@ -10,8 +10,8 @@ import (
 
 // Handler is a collection of all the service handlers.
 type Handler struct {
-	characterHandler *CharacterHandler
-	vehicleHandler   *VehicleHandler
+	CharacterHandler *CharacterHandler
+	VehicleHandler   *VehicleHandler
 	Router           *mux.Router
 }
 
@@ -21,17 +21,9 @@ func NewHandler() *Handler {
 
 	return &Handler{
 		Router:           r,
-		characterHandler: NewCharacterHandler(r),
-		vehicleHandler:   NewVehicleHandler(r),
+		CharacterHandler: NewCharacterHandler(r),
+		VehicleHandler:   NewVehicleHandler(r),
 	}
-}
-
-type internalErr struct {
-	msg string
-}
-
-func (e *internalErr) Error() string {
-	return e.msg
 }
 
 // Error writes an API error message to the response and logger.

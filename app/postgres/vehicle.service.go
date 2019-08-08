@@ -4,7 +4,6 @@ import (
 	"database/sql"
 
 	"github.com/edouardbozon/chewbacca/app"
-	_ "github.com/lib/pq"
 )
 
 // Ensure VehicleService is implementing the app.VehicleService
