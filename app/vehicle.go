@@ -24,8 +24,8 @@ type vehicleURL string
 
 // A VehicleService is a domain service that manage the Vehicle entity.
 type VehicleService interface {
-	getVehicle(id int) (*Character, error)
-	getVehicles() ([]*Character, error)
-	createVehicle(u *Character) error
-	deleteVehicle(id int) error
+	GetVehicle(id int) (*Vehicle, error)
+	GetVehicles(limit int, offset int) ([]*Vehicle, error)
+	CreateVehicle(v *Vehicle) error
+	DeleteVehicle(id int) error
 }

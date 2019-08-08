@@ -1,4 +1,4 @@
-package character
+package http
 
 import (
 	"database/sql"
@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/chewbacca/app/postgres"
 	"github.com/gorilla/mux"
 )
 
@@ -20,7 +21,7 @@ func getCharacters(w http.ResponseWriter, r *http.Request) {
 		start = 0
 	}
 
-	characters, err := getCharacters(a.DB, start, count)
+	characters, err := postgres.CharacterService.getCharacters(start, count)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -30,32 +31,32 @@ func getCharacters(w http.ResponseWriter, r *http.Request) {
 }
 
 func createCharacter(w http.ResponseWriter, r *http.Request) {
-	var character Character
+	var c Character
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&character); err != nil {
+	if err := decoder.Decode(&c); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 	defer r.Body.Close()
 
-	if err := character.createCharacter(a.DB); err != nil {
+	if err := postgres.CharacterService.createCharacter(c); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusCreated, character)
+	respondWithJSON(w, http.StatusCreated, c)
 }
 
 func getCharacter(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid character ID")
+		respondWithError(w, http.StatusBadRequest, "Invalid c ID")
 		return
 	}
 
-	character := Character{ID: id}
-	if err := character.getCharacter(a.DB); err != nil {
+	c := Character{ID: id}
+	if err := c.getCharacter(a.DB); err != nil {
 		switch err {
 		case sql.ErrNoRows:
 			respondWithError(w, http.StatusNotFound, "Character not found")
@@ -65,32 +66,32 @@ func getCharacter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, character)
+	respondWithJSON(w, http.StatusOK, c)
 }
 
 func updateCharacter(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid character ID")
+		respondWithError(w, http.StatusBadRequest, "Invalid c ID")
 		return
 	}
 
-	var character Character
+	var c Character
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&character); err != nil {
+	if err := decoder.Decode(&c); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid resquest payload")
 		return
 	}
 	defer r.Body.Close()
-	character.ID = id
+	c.ID = id
 
-	if err := character.updateCharacter(a.DB); err != nil {
+	if err := c.updateCharacter(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, character)
+	respondWithJSON(w, http.StatusOK, c)
 }
 
 func deleteCharacter(w http.ResponseWriter, r *http.Request) {
@@ -101,8 +102,8 @@ func deleteCharacter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	character := Character{ID: id}
-	if err := character.deleteCharacter(a.DB); err != nil {
+	c := Character{ID: id}
+	if err := c.deleteCharacter(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

@@ -1,4 +1,4 @@
-package postgres
+package http
 
 import (
 	"database/sql"
@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/chewbacca/app/postgres"
 	"github.com/gorilla/mux"
 )
 
@@ -20,7 +21,7 @@ func getVehicles(w http.ResponseWriter, r *http.Request) {
 		start = 0
 	}
 
-	vehicles, err := getVehicles(a.DB, start, count)
+	vehicles, err := postgres.VehicleService.getVehicles(start, count)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -30,32 +31,32 @@ func getVehicles(w http.ResponseWriter, r *http.Request) {
 }
 
 func createVehicle(w http.ResponseWriter, r *http.Request) {
-	var vehicle Vehicle
+	var v Vehicle
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&vehicle); err != nil {
+	if err := decoder.Decode(&v); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 	defer r.Body.Close()
 
-	if err := vehicle.createVehicle(a.DB); err != nil {
+	if err := postgres.VehicleService.createVehicle(v); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusCreated, vehicle)
+	respondWithJSON(w, http.StatusCreated, v)
 }
 
 func getVehicle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid vehicle ID")
+		respondWithError(w, http.StatusBadRequest, "Invalid v ID")
 		return
 	}
 
-	vehicle := Vehicle{ID: id}
-	if err := vehicle.getVehicle(a.DB); err != nil {
+	v := Vehicle{ID: id}
+	if err := v.getVehicle(a.DB); err != nil {
 		switch err {
 		case sql.ErrNoRows:
 			respondWithError(w, http.StatusNotFound, "Vehicle not found")
@@ -65,32 +66,32 @@ func getVehicle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, vehicle)
+	respondWithJSON(w, http.StatusOK, v)
 }
 
 func updateVehicle(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid vehicle ID")
+		respondWithError(w, http.StatusBadRequest, "Invalid v ID")
 		return
 	}
 
-	var vehicle Vehicle
+	var v Vehicle
 	decoder := json.NewDecoder(r.Body)
-	if err := decoder.Decode(&vehicle); err != nil {
+	if err := decoder.Decode(&v); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid resquest payload")
 		return
 	}
 	defer r.Body.Close()
-	vehicle.ID = id
+	v.ID = id
 
-	if err := vehicle.updateVehicle(a.DB); err != nil {
+	if err := v.updateVehicle(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, vehicle)
+	respondWithJSON(w, http.StatusOK, v)
 }
 
 func deleteVehicle(w http.ResponseWriter, r *http.Request) {
@@ -101,8 +102,8 @@ func deleteVehicle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	vehicle := Vehicle{ID: id}
-	if err := vehicle.deleteVehicle(a.DB); err != nil {
+	v := Vehicle{ID: id}
+	if err := v.deleteVehicle(a.DB); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

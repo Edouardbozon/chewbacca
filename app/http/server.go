@@ -1,48 +1,37 @@
-package main
+package http
 
 import (
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	_ "github.com/lib/pq"
 )
 
-// App representation
-type App struct {
+// Server representation
+type Server struct {
 	Router *mux.Router
-	DB     *sql.DB
 }
 
 // Initialize app
-func (a *App) Initialize(user string, password string, dbname string) {
+func (a *Server) Initialize(user string, password string, dbname string) {
 	connectionString :=
 		fmt.Sprintf("user=%s password=%s dbname=%s", user, password, dbname)
 
 	log.Print(connectionString)
-
-	var err error
-	a.DB, err = sql.Open("postgres", connectionString)
-	defer a.DB.Close()
-
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	a.Router = mux.NewRouter()
 	a.initializeRoutes()
 }
 
 // Run app
-func (a *App) Run(addr string) {
+func (a *Server) Run(addr string) {
 	log.Println(fmt.Sprintf("Server started on: http://localhost%s", addr))
 	log.Fatal(http.ListenAndServe(addr, a.Router))
 }
 
-func (a *App) initializeRoutes() {
+func (a *Server) initializeRoutes() {
 	// Vehicle
 	a.Router.HandleFunc("/vehicles", a.getVehicles).Methods("GET")
 	a.Router.HandleFunc("/vehicle", a.createVehicle).Methods("POST")

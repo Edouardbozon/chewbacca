@@ -22,8 +22,8 @@ type characterURL string
 
 // A CharacterService is a domain service that manage the Character entity.
 type CharacterService interface {
-	getCharacter(id int) (*Character, error)
-	getCharacters() ([]*Character, error)
-	createCharacter(u *Character) error
-	deleteCharacter(id int) error
+	GetCharacter(id int) (*Character, error)
+	GetCharacters(limit int, offset int) ([]*Character, error)
+	CreateCharacter(c *Character) error
+	DeleteCharacter(id int) error
 }
