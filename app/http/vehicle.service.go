@@ -24,7 +24,7 @@ func NewVehicleHandler(r *mux.Router) *VehicleHandler {
 		Logger: log.New(os.Stderr, "", log.LstdFlags),
 	}
 
-	h.Router.HandleFunc("/api/characters", h.handleGetCharacters).Methods("GET")
+	h.Router.HandleFunc("/api/vehicles", h.handleGetCharacters).Methods("GET")
 	// h.Router.HandleFunc("/api/character", h.handleGetCharacters).Methods("POST")
 	// h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.handleGetCharacters).Methods("GET")
 	// h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.handleGetCharacters).Methods("PUT")
@@ -44,13 +44,13 @@ func (h *VehicleHandler) handleGetCharacters(w http.ResponseWriter, r *http.Requ
 		offset = 0
 	}
 
-	vehicles, err := h.VehicleService.GetVehicles(limit, offset)
+	v, err := h.VehicleService.GetVehicles(limit, offset)
 	if err != nil {
 		Error(w, err, http.StatusInternalServerError, h.Logger)
 		return
 	}
 
-	encodeJSON(w, vehicles, h.Logger)
+	encodeJSON(w, v, h.Logger)
 }
 
 // func createVehicle(w http.ResponseWriter, r *http.Request) {

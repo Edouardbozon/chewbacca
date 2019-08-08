@@ -11,13 +11,13 @@ var _ app.CharacterService = &CharacterService{}
 
 // CharacterService represents the PostgreSQL implementation of app.CharacterService.
 type CharacterService struct {
-	db *sql.DB
+	DB *sql.DB
 }
 
 // GetCharacter get a character from DB according to the given id
 func (s *CharacterService) GetCharacter(id int) (*app.Character, error) {
 	var c app.Character
-	row := s.db.QueryRow("SELECT * FROM characters WHERE id=$1", id)
+	row := s.DB.QueryRow("SELECT * FROM characters WHERE id=$1", id)
 	if err := row.Scan(&c.ID); err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func (s *CharacterService) GetCharacter(id int) (*app.Character, error) {
 
 // GetCharacters get a list of characters from DB according to the given limit and offset
 func (s *CharacterService) GetCharacters(limit int, offset int) ([]*app.Character, error) {
-	rows, err := s.db.Query(
+	rows, err := s.DB.Query(
 		"SELECT * FROM characters LIMIT $1 OFFSET $2",
 		limit, offset)
 
@@ -52,7 +52,7 @@ func (s *CharacterService) GetCharacters(limit int, offset int) ([]*app.Characte
 // UpdateCharacter update the character in DB with the given id
 func (s *CharacterService) UpdateCharacter(c *app.Character) error {
 	_, err :=
-		s.db.Exec(`
+		s.DB.Exec(`
 		UPDATE characters SET
 			name=$1,
 			height=$2,
@@ -89,14 +89,14 @@ func (s *CharacterService) UpdateCharacter(c *app.Character) error {
 
 // DeleteCharacter delete the character in DB with the given id
 func (s *CharacterService) DeleteCharacter(id int) error {
-	_, err := s.db.Exec("DELETE FROM characters WHERE id=$1", id)
+	_, err := s.DB.Exec("DELETE FROM characters WHERE id=$1", id)
 
 	return err
 }
 
 // CreateCharacter create a character in DB
 func (s *CharacterService) CreateCharacter(c *app.Character) error {
-	err := s.db.QueryRow(
+	err := s.DB.QueryRow(
 		`INSERT INTO vehicles(
 			name,
 			height,

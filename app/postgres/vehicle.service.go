@@ -11,13 +11,13 @@ var _ app.VehicleService = &VehicleService{}
 
 // VehicleService represents the PostgreSQL implementation of app.VehicleService.
 type VehicleService struct {
-	db *sql.DB
+	DB *sql.DB
 }
 
 // GetVehicle get a vehicle from DB according to the given ID
 func (s *VehicleService) GetVehicle(id int) (*app.Vehicle, error) {
 	var v app.Vehicle
-	row := s.db.QueryRow("SELECT * FROM vehicles WHERE id=$1", id)
+	row := s.DB.QueryRow("SELECT * FROM vehicles WHERE id=$1", id)
 	if err := row.Scan(&v.ID); err != nil {
 		return nil, err
 	}
@@ -26,7 +26,7 @@ func (s *VehicleService) GetVehicle(id int) (*app.Vehicle, error) {
 
 // GetVehicles get a list of vehicles from DB according to the given limit and offset
 func (s *VehicleService) GetVehicles(limit int, offset int) ([]*app.Vehicle, error) {
-	rows, err := s.db.Query(
+	rows, err := s.DB.Query(
 		"SELECT * FROM vehicles LIMIT $1 OFFSET $2",
 		limit, offset)
 
@@ -52,7 +52,7 @@ func (s *VehicleService) GetVehicles(limit int, offset int) ([]*app.Vehicle, err
 // UpdateVehicle updates the vehicle in DB with the given id
 func (s *VehicleService) UpdateVehicle(v *app.Vehicle) error {
 	_, err :=
-		s.db.Exec(`
+		s.DB.Exec(`
 		UPDATE vehicles SET
 			name=$1,
 			model=$2,
@@ -93,14 +93,14 @@ func (s *VehicleService) UpdateVehicle(v *app.Vehicle) error {
 
 // DeleteVehicle deletes the vehicle in DB with the given id
 func (s *VehicleService) DeleteVehicle(id int) error {
-	_, err := s.db.Exec("DELETE FROM vehicles WHERE id=$1", id)
+	_, err := s.DB.Exec("DELETE FROM vehicles WHERE id=$1", id)
 
 	return err
 }
 
 // CreateVehicle creates a vehicle in DB
 func (s *VehicleService) CreateVehicle(v *app.Vehicle) error {
-	err := s.db.QueryRow(
+	err := s.DB.QueryRow(
 		`INSERT INTO vehicles(
 			name,
 			model,

@@ -44,13 +44,13 @@ func (h *CharacterHandler) handleGetCharacters(w http.ResponseWriter, r *http.Re
 		start = 0
 	}
 
-	characters, err := h.CharacterService.GetCharacters(start, count)
+	c, err := h.CharacterService.GetCharacters(start, count)
 	if err != nil {
 		Error(w, err, http.StatusInternalServerError, h.Logger)
 		return
 	}
 
-	encodeJSON(w, characters, h.Logger)
+	encodeJSON(w, c, h.Logger)
 }
 
 // func createCharacter(w http.ResponseWriter, r *http.Request) {
