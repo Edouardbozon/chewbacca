@@ -26,6 +26,7 @@ type vehicleURL string
 type VehicleService interface {
 	GetVehicle(id int) (*Vehicle, error)
 	GetVehicles(limit int, offset int) ([]*Vehicle, error)
+	UpdateVehicle(v *Vehicle) error
 	CreateVehicle(v *Vehicle) error
 	DeleteVehicle(id int) error
 }

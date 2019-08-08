@@ -15,7 +15,7 @@ type CharacterService struct {
 	db *sql.DB
 }
 
-// GetCharacter get a character according to the given id
+// GetCharacter get a character from DB according to the given id
 func (s *CharacterService) GetCharacter(id int) (*app.Character, error) {
 	var c app.Character
 	row := s.db.QueryRow("SELECT * FROM characters WHERE id=$1", id)
@@ -25,7 +25,7 @@ func (s *CharacterService) GetCharacter(id int) (*app.Character, error) {
 	return &c, nil
 }
 
-// GetCharacters get a list of characters according to the given limit and offset
+// GetCharacters get a list of characters from DB according to the given limit and offset
 func (s *CharacterService) GetCharacters(limit int, offset int) ([]*app.Character, error) {
 	rows, err := s.db.Query(
 		"SELECT * FROM characters LIMIT $1 OFFSET $2",
@@ -50,43 +50,43 @@ func (s *CharacterService) GetCharacters(limit int, offset int) ([]*app.Characte
 	return characters, nil
 }
 
-// updateCharacter update the c with the given id
-// func (s *CharacterService) updateCharacter(c *app.Character) error {
-// 	_, err :=
-// 		s.db.Exec(`
-// 		UPDATE characters SET
-// 			name=$1,
-// 			height=$2,
-// 			mass=$3,
-// 			hair_color=$4,
-// 			skin_color=$5,
-// 			eye_color=$6,
-// 			birth_year=$7,
-// 			gender=$8,
-// 			homeworld=$9,
-// 			vehicle_urls=$10,
-// 			created=$11,
-// 			edited=$12,
-// 			url=$13,
-// 		WHERE id=$14`,
-// 			c.Name,
-// 			c.Height,
-// 			c.Mass,
-// 			c.HairColor,
-// 			c.SkinColor,
-// 			c.EyeColor,
-// 			c.BirthYear,
-// 			c.Gender,
-// 			c.Homeworld,
-// 			c.VehicleURLs,
-// 			c.Created,
-// 			c.Edited,
-// 			c.URL,
-// 			c.ID,
-// 		)
+// UpdateCharacter update the character in DB with the given id
+func (s *CharacterService) UpdateCharacter(c *app.Character) error {
+	_, err :=
+		s.db.Exec(`
+		UPDATE characters SET
+			name=$1,
+			height=$2,
+			mass=$3,
+			hair_color=$4,
+			skin_color=$5,
+			eye_color=$6,
+			birth_year=$7,
+			gender=$8,
+			homeworld=$9,
+			vehicle_urls=$10,
+			created=$11,
+			edited=$12,
+			url=$13,
+		WHERE id=$14`,
+			c.Name,
+			c.Height,
+			c.Mass,
+			c.HairColor,
+			c.SkinColor,
+			c.EyeColor,
+			c.BirthYear,
+			c.Gender,
+			c.Homeworld,
+			c.VehicleURLs,
+			c.Created,
+			c.Edited,
+			c.URL,
+			c.ID,
+		)
 
-// 	return err
-// }
+	return err
+}
 
 // DeleteCharacter delete the character in DB with the given id
 func (s *CharacterService) DeleteCharacter(id int) error {

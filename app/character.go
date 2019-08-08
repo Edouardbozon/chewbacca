@@ -24,6 +24,7 @@ type characterURL string
 type CharacterService interface {
 	GetCharacter(id int) (*Character, error)
 	GetCharacters(limit int, offset int) ([]*Character, error)
+	UpdateCharacter(c *Character) error
 	CreateCharacter(c *Character) error
 	DeleteCharacter(id int) error
 }

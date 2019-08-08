@@ -15,6 +15,7 @@ type VehicleService struct {
 	db *sql.DB
 }
 
+// GetVehicle get a vehicle from DB according to the given ID
 func (s *VehicleService) GetVehicle(id int) (*app.Vehicle, error) {
 	var v app.Vehicle
 	row := s.db.QueryRow("SELECT * FROM vehicles WHERE id=$1", id)
@@ -24,6 +25,7 @@ func (s *VehicleService) GetVehicle(id int) (*app.Vehicle, error) {
 	return &v, nil
 }
 
+// GetVehicles get a list of vehicles from DB according to the given limit and offset
 func (s *VehicleService) GetVehicles(limit int, offset int) ([]*app.Vehicle, error) {
 	rows, err := s.db.Query(
 		"SELECT * FROM vehicles LIMIT $1 OFFSET $2",
@@ -48,56 +50,56 @@ func (s *VehicleService) GetVehicles(limit int, offset int) ([]*app.Vehicle, err
 	return vehicles, nil
 }
 
-// updateVehicle update the v with the given id
-// func (s *VehicleService) updateVehicle(id int) error {
-// 	_, err :=
-// 		s.db.Exec(`
-// 		UPDATE vehicles SET
-// 			name=$1,
-// 			model=$2,
-// 			manufacturer=$3,
-// 			cost_in_credits=$4,
-// 			length=$5,
-// 			max_atmosphering_speed=$6,
-// 			crew=$7,
-// 			passengers=$8,
-// 			cargo_capacity=$9,
-// 			consumables=$10,
-// 			vehicle_class=$11,
-// 			pilot_urls=$12,
-// 			created=$13,
-// 			edited=$14,
-// 			url=$15
-// 		WHERE id=$16`,
-// 			v.Name,
-// 			v.Model,
-// 			v.Manufacturer,
-// 			v.CostInCredits,
-// 			v.Length,
-// 			v.MaxAtmospheringSpeed,
-// 			v.Crew,
-// 			v.Passengers,
-// 			v.CargoCapacity,
-// 			v.Consumables,
-// 			v.VehicleClass,
-// 			v.PilotURLs,
-// 			v.Created,
-// 			v.Edited,
-// 			v.URL,
-// 			v.ID,
-// 		)
+// UpdateVehicle updates the vehicle in DB with the given id
+func (s *VehicleService) UpdateVehicle(v *app.Vehicle) error {
+	_, err :=
+		s.db.Exec(`
+		UPDATE vehicles SET
+			name=$1,
+			model=$2,
+			manufacturer=$3,
+			cost_in_credits=$4,
+			length=$5,
+			max_atmosphering_speed=$6,
+			crew=$7,
+			passengers=$8,
+			cargo_capacity=$9,
+			consumables=$10,
+			vehicle_class=$11,
+			pilot_urls=$12,
+			created=$13,
+			edited=$14,
+			url=$15
+		WHERE id=$16`,
+			v.Name,
+			v.Model,
+			v.Manufacturer,
+			v.CostInCredits,
+			v.Length,
+			v.MaxAtmospheringSpeed,
+			v.Crew,
+			v.Passengers,
+			v.CargoCapacity,
+			v.Consumables,
+			v.VehicleClass,
+			v.PilotURLs,
+			v.Created,
+			v.Edited,
+			v.URL,
+			v.ID,
+		)
 
-// 	return err
-// }
+	return err
+}
 
-// deleteVehicle update the v with the given id
+// DeleteVehicle deletes the vehicle in DB with the given id
 func (s *VehicleService) DeleteVehicle(id int) error {
 	_, err := s.db.Exec("DELETE FROM vehicles WHERE id=$1", id)
 
 	return err
 }
 
-// CreateVehicle create a v
+// CreateVehicle creates a vehicle in DB
 func (s *VehicleService) CreateVehicle(v *app.Vehicle) error {
 	err := s.db.QueryRow(
 		`INSERT INTO vehicles(
