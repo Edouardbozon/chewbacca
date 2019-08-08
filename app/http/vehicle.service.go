@@ -6,7 +6,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/chewbacca/app"
+	"github.com/edouardbozon/chewbacca/app"
 	"github.com/gorilla/mux"
 )
 

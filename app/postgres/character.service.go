@@ -3,7 +3,7 @@ package postgres
 import (
 	"database/sql"
 
-	"github.com/chewbacca/app"
+	"github.com/edouardbozon/chewbacca/app"
 	_ "github.com/lib/pq"
 )
 
