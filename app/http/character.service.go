@@ -1,6 +1,8 @@
 package http
 
 import (
+	"database/sql"
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -24,27 +26,27 @@ func NewCharacterHandler(r *mux.Router) *CharacterHandler {
 		Logger: log.New(os.Stderr, "", log.LstdFlags),
 	}
 
-	h.Router.HandleFunc("/api/characters", h.handleGetCharacters).Methods("GET")
-	// h.Router.HandleFunc("/api/character", h.handleGetCharacters).Methods("POST")
-	// h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.handleGetCharacters).Methods("GET")
-	// h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.handleGetCharacters).Methods("PUT")
-	// h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.handleGetCharacters).Methods("DELETE")
+	h.Router.HandleFunc("/api/characters", h.getCharacters).Methods("GET")
+	h.Router.HandleFunc("/api/character", h.createCharacter).Methods("POST")
+	h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.getCharacter).Methods("GET")
+	h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.updateCharacter).Methods("PUT")
+	h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.deleteCharacter).Methods("DELETE")
 
 	return h
 }
 
-func (h *CharacterHandler) handleGetCharacters(w http.ResponseWriter, r *http.Request) {
-	count, _ := strconv.Atoi(r.FormValue("count"))
-	start, _ := strconv.Atoi(r.FormValue("start"))
+func (h *CharacterHandler) getCharacters(w http.ResponseWriter, r *http.Request) {
+	offset, _ := strconv.Atoi(r.FormValue("offset"))
+	limit, _ := strconv.Atoi(r.FormValue("limit"))
 
-	if count > 10 || count < 1 {
-		count = 10
+	if offset > 10 || offset < 1 {
+		offset = 10
 	}
-	if start < 0 {
-		start = 0
+	if limit < 0 {
+		limit = 0
 	}
 
-	c, err := h.CharacterService.GetCharacters(start, count)
+	c, err := h.CharacterService.GetCharacters(limit, offset)
 	if err != nil {
 		Error(w, err, http.StatusInternalServerError, h.Logger)
 		return
@@ -53,83 +55,86 @@ func (h *CharacterHandler) handleGetCharacters(w http.ResponseWriter, r *http.Re
 	encodeJSON(w, c, h.Logger)
 }
 
-// func createCharacter(w http.ResponseWriter, r *http.Request) {
-// 	var c Character
-// 	decoder := json.NewDecoder(r.Body)
-// 	if err := decoder.Decode(&c); err != nil {
-// 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-// 		return
-// 	}
-// 	defer r.Body.Close()
+func (h *CharacterHandler) createCharacter(w http.ResponseWriter, r *http.Request) {
+	var c *app.Character
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&c); err != nil {
+		Error(w, err, http.StatusInternalServerError, h.Logger)
+		return
+	}
+	defer r.Body.Close()
 
-// 	if err := postgres.CharacterService.createCharacter(c); err != nil {
-// 		respondWithError(w, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
+	if err := h.CharacterService.CreateCharacter(c); err != nil {
+		Error(w, err, http.StatusInternalServerError, h.Logger)
+		return
+	}
 
-// 	respondWithJSON(w, http.StatusCreated, c)
-// }
+	encodeJSON(w, c, h.Logger)
+}
 
-// func getCharacter(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	id, err := strconv.Atoi(vars["id"])
-// 	if err != nil {
-// 		respondWithError(w, http.StatusBadRequest, "Invalid c ID")
-// 		return
-// 	}
+func (h *CharacterHandler) getCharacter(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		Error(w, err, http.StatusNotFound, h.Logger)
+		return
+	}
 
-// 	c := Character{ID: id}
-// 	if err := c.getCharacter(a.DB); err != nil {
-// 		switch err {
-// 		case sql.ErrNoRows:
-// 			respondWithError(w, http.StatusNotFound, "Character not found")
-// 		default:
-// 			respondWithError(w, http.StatusInternalServerError, err.Error())
-// 		}
-// 		return
-// 	}
+	c, err := h.CharacterService.GetCharacter(id)
 
-// 	respondWithJSON(w, http.StatusOK, c)
-// }
+	if err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			Error(w, err, http.StatusNotFound, h.Logger)
+		default:
+			Error(w, err, http.StatusInternalServerError, h.Logger)
+		}
+		return
+	}
 
-// func updateCharacter(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	id, err := strconv.Atoi(vars["id"])
-// 	if err != nil {
-// 		respondWithError(w, http.StatusBadRequest, "Invalid c ID")
-// 		return
-// 	}
+	encodeJSON(w, c, h.Logger)
+}
 
-// 	var c Character
-// 	decoder := json.NewDecoder(r.Body)
-// 	if err := decoder.Decode(&c); err != nil {
-// 		respondWithError(w, http.StatusBadRequest, "Invalid resquest payload")
-// 		return
-// 	}
-// 	defer r.Body.Close()
-// 	c.ID = id
+func (h *CharacterHandler) updateCharacter(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		Error(w, err, http.StatusInternalServerError, h.Logger)
+		return
+	}
 
-// 	if err := c.updateCharacter(a.DB); err != nil {
-// 		respondWithError(w, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
+	var c *app.Character
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&c); err != nil {
+		Error(w, err, http.StatusNotFound, h.Logger)
+		return
+	}
+	defer r.Body.Close()
+	c.ID = id
 
-// 	respondWithJSON(w, http.StatusOK, c)
-// }
+	if err := h.CharacterService.UpdateCharacter(c); err != nil {
+		Error(w, err, http.StatusInternalServerError, h.Logger)
+		return
+	}
 
-// func deleteCharacter(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	id, err := strconv.Atoi(vars["id"])
-// 	if err != nil {
-// 		respondWithError(w, http.StatusBadRequest, "Invalid Character ID")
-// 		return
-// 	}
+	encodeJSON(w, c, h.Logger)
+}
 
-// 	c := Character{ID: id}
-// 	if err := c.deleteCharacter(a.DB); err != nil {
-// 		respondWithError(w, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
+func (h *CharacterHandler) deleteCharacter(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		Error(w, err, http.StatusBadRequest, h.Logger)
+		return
+	}
 
-// 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
-// }
+	if err := h.CharacterService.DeleteCharacter(id); err != nil {
+		Error(w, err, http.StatusInternalServerError, h.Logger)
+		return
+	}
+
+	var c *app.Character
+	c.ID = id
+
+	encodeJSON(w, c, h.Logger)
+}
