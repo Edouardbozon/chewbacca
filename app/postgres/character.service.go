@@ -97,7 +97,7 @@ func (s *CharacterService) DeleteCharacter(id int) error {
 // CreateCharacter create a character in DB
 func (s *CharacterService) CreateCharacter(c *app.Character) error {
 	err := s.DB.QueryRow(
-		`INSERT INTO vehicles(
+		`INSERT INTO vehicles (
 			name,
 			height,
 			mass,
@@ -111,7 +111,7 @@ func (s *CharacterService) CreateCharacter(c *app.Character) error {
 			created,
 			edited,
 			url,
-		) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
 		RETURNING id`,
 		c.Name,
 		c.Height,

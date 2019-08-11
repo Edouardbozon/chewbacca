@@ -1,5 +1,5 @@
 CREATE TABLE vehicles (
-  id                      serial PRIMARY KEY NOT NULL,
+  id                      serial PRIMARY KEY,
   length                  numeric NOT NULL,
   passengers              integer NOT NULL,
   crew                    integer NOT NULL,
@@ -17,7 +17,7 @@ CREATE TABLE vehicles (
 );
 
 CREATE TABLE characters (
-  id          serial PRIMARY KEY NOT NULL,
+  id          serial PRIMARY KEY,
   height      integer NOT NULL,
   mass        integer NOT NULL,
   name        text NOT NULL,

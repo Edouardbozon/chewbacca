@@ -65,6 +65,7 @@ func (h *VehicleHandler) createVehicle(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	if err := h.VehicleService.CreateVehicle(v); err != nil {
+		print(err)
 		Error(w, err, http.StatusInternalServerError, h.Logger)
 		return
 	}

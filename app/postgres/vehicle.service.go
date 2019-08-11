@@ -101,7 +101,7 @@ func (s *VehicleService) DeleteVehicle(id int) error {
 // CreateVehicle creates a vehicle in DB
 func (s *VehicleService) CreateVehicle(v *app.Vehicle) error {
 	err := s.DB.QueryRow(
-		`INSERT INTO vehicles(
+		`INSERT INTO vehicles (
 			name,
 			model,
 			manufacturer,
@@ -117,7 +117,7 @@ func (s *VehicleService) CreateVehicle(v *app.Vehicle) error {
 			created,
 			edited,
 			url
-		) VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
 		RETURNING id`,
 		v.Name,
 		v.Model,
@@ -134,6 +134,8 @@ func (s *VehicleService) CreateVehicle(v *app.Vehicle) error {
 		v.Created,
 		v.Edited,
 		v.URL).Scan(&v.ID)
+
+	print(err)
 
 	if err != nil {
 		return err
