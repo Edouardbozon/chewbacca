@@ -10,8 +10,31 @@ services:
     environment:
       APP_DB_USERNAME: postgres
       APP_DB_PASSWORD: postgres
-      APP_DB_NAME: postgres
+      APP_DB_NAME: chewbacca
 
-  db:
+  database:
     image: postgres
     restart: always
+    networks:
+      new:
+        aliases:
+          - db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: chewbacca
+
+  migrate:
+    image: migrate/migrate
+    networks:
+        - new
+    volumes:
+        - ./app/migrations:/migrations
+    command: ["-path", "/migrations", "-database", "postgres://postgres:postgres@database:5432/chewbacca?sslmode=disable", "up", "1"]
+    links: 
+        - database
+
+networks:
+  new:

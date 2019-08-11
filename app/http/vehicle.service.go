@@ -27,10 +27,10 @@ func NewVehicleHandler(r *mux.Router) *VehicleHandler {
 	}
 
 	h.Router.HandleFunc("/api/vehicles", h.getCharacters).Methods("GET")
-	h.Router.HandleFunc("/api/character", h.createVehicle).Methods("POST")
-	h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.getVehicle).Methods("GET")
-	h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.updateVehicle).Methods("PUT")
-	h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.deleteVehicle).Methods("DELETE")
+	h.Router.HandleFunc("/api/vehicle", h.createVehicle).Methods("POST")
+	h.Router.HandleFunc("/api/vehicle/{id:[0-9]+}", h.getVehicle).Methods("GET")
+	h.Router.HandleFunc("/api/vehicle/{id:[0-9]+}", h.updateVehicle).Methods("PUT")
+	h.Router.HandleFunc("/api/vehicle/{id:[0-9]+}", h.deleteVehicle).Methods("DELETE")
 
 	return h
 }

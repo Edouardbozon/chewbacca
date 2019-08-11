@@ -3,9 +3,9 @@ package app
 // A Character is an individual person or character within the Star Wars universe.
 type Character struct {
 	ID          int          `json:"id"`
-	Name        string       `json:"name"`
 	Height      int          `json:"height"`
 	Mass        int          `json:"mass"`
+	Name        string       `json:"name"`
 	HairColor   string       `json:"hair_color"`
 	SkinColor   string       `json:"skin_color"`
 	EyeColor    string       `json:"eye_color"`
@@ -13,8 +13,8 @@ type Character struct {
 	Gender      string       `json:"gender"`
 	Homeworld   string       `json:"homeworld"`
 	VehicleURLs []vehicleURL `json:"vehicles"`
-	Created     bool         `json:"created"`
-	Edited      bool         `json:"edited"`
+	Created     string       `json:"created"`
+	Edited      string       `json:"edited"`
 	URL         string       `json:"url"`
 }
 

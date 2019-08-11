@@ -17,7 +17,7 @@ type Client struct {
 // Open opens and initializes the PostgreSQL database.
 func (a *Client) Open(user string, password string, dbname string) {
 	connection :=
-		fmt.Sprintf("user=%s password=%s dbname=%s", user, password, dbname)
+		fmt.Sprintf("user=%s password=%s dbname=%s sslmode=disable", user, password, dbname)
 
 	var err error
 	a.DB, err = sql.Open("postgres", connection)

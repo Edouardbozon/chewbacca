@@ -3,20 +3,20 @@ package app
 // A Vehicle is a single transport craft that does not have hyperdrive capability.
 type Vehicle struct {
 	ID                   int            `json:"id"`
+	Crew                 int            `json:"crew"`
+	Passengers           int            `json:"passengers"`
+	Length               int            `json:"length"`
 	Name                 string         `json:"name"`
 	Model                string         `json:"model"`
 	Manufacturer         string         `json:"manufacturer"`
 	CostInCredits        string         `json:"cost_in_credits"`
-	Length               int            `json:"length"`
 	MaxAtmospheringSpeed string         `json:"max_atmosphering_speed"`
-	Crew                 string         `json:"crew"`
-	Passengers           string         `json:"passengers"`
 	CargoCapacity        string         `json:"cargo_capacity"`
 	Consumables          string         `json:"consumables"`
 	VehicleClass         string         `json:"vehicle_class"`
 	PilotURLs            []characterURL `json:"pilots"`
-	Created              bool           `json:"created"`
-	Edited               bool           `json:"edited"`
+	Created              string         `json:"created"`
+	Edited               string         `json:"edited"`
 	URL                  string         `json:"url"`
 }
 
