@@ -1,6 +1,8 @@
 package http
 
 import (
+	"database/sql"
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -24,16 +26,16 @@ func NewVehicleHandler(r *mux.Router) *VehicleHandler {
 		Logger: log.New(os.Stderr, "", log.LstdFlags),
 	}
 
-	h.Router.HandleFunc("/api/vehicles", h.handleGetCharacters).Methods("GET")
-	// h.Router.HandleFunc("/api/character", h.handleGetCharacters).Methods("POST")
-	// h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.handleGetCharacters).Methods("GET")
-	// h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.handleGetCharacters).Methods("PUT")
-	// h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.handleGetCharacters).Methods("DELETE")
+	h.Router.HandleFunc("/api/vehicles", h.getCharacters).Methods("GET")
+	h.Router.HandleFunc("/api/character", h.createVehicle).Methods("POST")
+	h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.getVehicle).Methods("GET")
+	h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.updateVehicle).Methods("PUT")
+	h.Router.HandleFunc("/api/character/{id:[0-9]+}", h.deleteVehicle).Methods("DELETE")
 
 	return h
 }
 
-func (h *VehicleHandler) handleGetCharacters(w http.ResponseWriter, r *http.Request) {
+func (h *VehicleHandler) getCharacters(w http.ResponseWriter, r *http.Request) {
 	limit, _ := strconv.Atoi(r.FormValue("limit"))
 	offset, _ := strconv.Atoi(r.FormValue("offset"))
 
@@ -53,83 +55,86 @@ func (h *VehicleHandler) handleGetCharacters(w http.ResponseWriter, r *http.Requ
 	encodeJSON(w, v, h.Logger)
 }
 
-// func createVehicle(w http.ResponseWriter, r *http.Request) {
-// 	var v Vehicle
-// 	decoder := json.NewDecoder(r.Body)
-// 	if err := decoder.Decode(&v); err != nil {
-// 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
-// 		return
-// 	}
-// 	defer r.Body.Close()
+func (h *VehicleHandler) createVehicle(w http.ResponseWriter, r *http.Request) {
+	var v *app.Vehicle
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&v); err != nil {
+		Error(w, err, http.StatusBadRequest, h.Logger)
+		return
+	}
+	defer r.Body.Close()
 
-// 	if err := postgres.VehicleService.createVehicle(v); err != nil {
-// 		respondWithError(w, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
+	if err := h.VehicleService.CreateVehicle(v); err != nil {
+		Error(w, err, http.StatusInternalServerError, h.Logger)
+		return
+	}
 
-// 	respondWithJSON(w, http.StatusCreated, v)
-// }
+	encodeJSON(w, v, h.Logger)
+}
 
-// func getVehicle(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	id, err := strconv.Atoi(vars["id"])
-// 	if err != nil {
-// 		respondWithError(w, http.StatusBadRequest, "Invalid v ID")
-// 		return
-// 	}
+func (h *VehicleHandler) getVehicle(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		Error(w, err, http.StatusBadRequest, h.Logger)
+		return
+	}
 
-// 	v := Vehicle{ID: id}
-// 	if err := v.getVehicle(a.DB); err != nil {
-// 		switch err {
-// 		case sql.ErrNoRows:
-// 			respondWithError(w, http.StatusNotFound, "Vehicle not found")
-// 		default:
-// 			respondWithError(w, http.StatusInternalServerError, err.Error())
-// 		}
-// 		return
-// 	}
+	v, err := h.VehicleService.GetVehicle(id)
 
-// 	respondWithJSON(w, http.StatusOK, v)
-// }
+	if err != nil {
+		switch err {
+		case sql.ErrNoRows:
+			Error(w, err, http.StatusNotFound, h.Logger)
+		default:
+			Error(w, err, http.StatusInternalServerError, h.Logger)
+		}
+		return
+	}
 
-// func updateVehicle(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	id, err := strconv.Atoi(vars["id"])
-// 	if err != nil {
-// 		respondWithError(w, http.StatusBadRequest, "Invalid v ID")
-// 		return
-// 	}
+	encodeJSON(w, v, h.Logger)
+}
 
-// 	var v Vehicle
-// 	decoder := json.NewDecoder(r.Body)
-// 	if err := decoder.Decode(&v); err != nil {
-// 		respondWithError(w, http.StatusBadRequest, "Invalid resquest payload")
-// 		return
-// 	}
-// 	defer r.Body.Close()
-// 	v.ID = id
+func (h *VehicleHandler) updateVehicle(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		Error(w, err, http.StatusBadRequest, h.Logger)
+		return
+	}
 
-// 	if err := v.updateVehicle(a.DB); err != nil {
-// 		respondWithError(w, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
+	var v *app.Vehicle
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&v); err != nil {
+		Error(w, err, http.StatusBadRequest, h.Logger)
+		return
+	}
+	defer r.Body.Close()
+	v.ID = id
 
-// 	respondWithJSON(w, http.StatusOK, v)
-// }
+	if err := h.VehicleService.UpdateVehicle(v); err != nil {
+		Error(w, err, http.StatusInternalServerError, h.Logger)
+		return
+	}
 
-// func deleteVehicle(w http.ResponseWriter, r *http.Request) {
-// 	vars := mux.Vars(r)
-// 	id, err := strconv.Atoi(vars["id"])
-// 	if err != nil {
-// 		respondWithError(w, http.StatusBadRequest, "Invalid Vehicle ID")
-// 		return
-// 	}
+	encodeJSON(w, v, h.Logger)
+}
 
-// 	v := Vehicle{ID: id}
-// 	if err := v.deleteVehicle(a.DB); err != nil {
-// 		respondWithError(w, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
+func (h *VehicleHandler) deleteVehicle(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.Atoi(vars["id"])
+	if err != nil {
+		Error(w, err, http.StatusBadRequest, h.Logger)
+		return
+	}
 
-// 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
-// }
+	if err := h.VehicleService.DeleteVehicle(id); err != nil {
+		Error(w, err, http.StatusInternalServerError, h.Logger)
+		return
+	}
+
+	var v *app.Vehicle
+	v.ID = id
+
+	encodeJSON(w, v, h.Logger)
+}
