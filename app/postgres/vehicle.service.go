@@ -135,7 +135,7 @@ func (s *VehicleService) CreateVehicle(v *app.Vehicle) error {
 		v.Edited,
 		v.URL).Scan(&v.ID)
 
-	print(err)
+	print(err.Error())
 
 	if err != nil {
 		return err
