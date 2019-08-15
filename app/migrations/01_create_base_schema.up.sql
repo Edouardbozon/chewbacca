@@ -33,7 +33,7 @@ CREATE TABLE characters (
 );
 
 CREATE TABLE vehicles_pilots (
-  pilot_id integer FOREIGN KEY REFERENCES characters(id),
-  vehicle_id integer FOREIGN KEY REFERENCES vehicles(id),
+  pilot_id integer REFERENCES characters(id),
+  vehicle_id integer REFERENCES vehicles(id),
   CONSTRAINT id PRIMARY KEY (pilot_id, vehicle_id)
 )

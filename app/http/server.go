@@ -6,7 +6,7 @@ import (
 )
 
 // DefaultAddr is the default bind address.
-const DefaultAddr = ":8080"
+const DefaultAddr = ":8081"
 
 // Server represents an HTTP server.type
 type Server struct {

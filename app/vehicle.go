@@ -1,5 +1,7 @@
 package app
 
+import "time"
+
 // A Vehicle is a single transport craft that does not have hyperdrive capability.
 type Vehicle struct {
 	ID                   int            `json:"id"`
@@ -15,8 +17,8 @@ type Vehicle struct {
 	Consumables          string         `json:"consumables"`
 	VehicleClass         string         `json:"vehicle_class"`
 	PilotURLs            []characterURL `json:"pilots"`
-	Created              string         `json:"created"`
-	Edited               string         `json:"edited"`
+	Created              time.Time      `json:"created"`
+	Edited               time.Time      `json:"edited"`
 	URL                  string         `json:"url"`
 }
 

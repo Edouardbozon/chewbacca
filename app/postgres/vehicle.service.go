@@ -17,10 +17,28 @@ type VehicleService struct {
 // GetVehicle get a vehicle from DB according to the given ID
 func (s *VehicleService) GetVehicle(id int) (*app.Vehicle, error) {
 	var v app.Vehicle
-	row := s.DB.QueryRow("SELECT * FROM vehicles WHERE id=$1", id)
-	if err := row.Scan(&v.ID); err != nil {
+	row := s.DB.QueryRow(`SELECT (
+		id,
+		length,
+		passengers,
+		crew,
+		name,
+		model,
+		manufacturer,
+		cost_in_credits,
+		max_atmosphering_speed,
+		cargo_capacity,
+		consumables,
+		vehicle_class,
+		url,
+		created,
+		edited
+	) FROM vehicles WHERE id=$1`, &id)
+
+	if err := row.Scan(&id); err != nil {
 		return nil, err
 	}
+
 	return &v, nil
 }
 
@@ -65,11 +83,10 @@ func (s *VehicleService) UpdateVehicle(v *app.Vehicle) error {
 			cargo_capacity=$9,
 			consumables=$10,
 			vehicle_class=$11,
-			pilot_urls=$12,
-			created=$13,
-			edited=$14,
-			url=$15
-		WHERE id=$16`,
+			created=$12,
+			edited=$13,
+			url=$14
+		WHERE id=$15`,
 			v.Name,
 			v.Model,
 			v.Manufacturer,
@@ -81,7 +98,6 @@ func (s *VehicleService) UpdateVehicle(v *app.Vehicle) error {
 			v.CargoCapacity,
 			v.Consumables,
 			v.VehicleClass,
-			v.PilotURLs,
 			v.Created,
 			v.Edited,
 			v.URL,
@@ -113,11 +129,10 @@ func (s *VehicleService) CreateVehicle(v *app.Vehicle) error {
 			cargo_capacity,
 			consumables,
 			vehicle_class,
-			pilot_urls,
 			created,
 			edited,
 			url
-		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+		) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
 		RETURNING id`,
 		v.Name,
 		v.Model,
@@ -130,12 +145,9 @@ func (s *VehicleService) CreateVehicle(v *app.Vehicle) error {
 		v.CargoCapacity,
 		v.Consumables,
 		v.VehicleClass,
-		v.PilotURLs,
 		v.Created,
 		v.Edited,
 		v.URL).Scan(&v.ID)
-
-	print(err.Error())
 
 	if err != nil {
 		return err

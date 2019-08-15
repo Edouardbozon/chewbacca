@@ -1,5 +1,7 @@
 package app
 
+import "time"
+
 // A Character is an individual person or character within the Star Wars universe.
 type Character struct {
 	ID          int          `json:"id"`
@@ -13,8 +15,8 @@ type Character struct {
 	Gender      string       `json:"gender"`
 	Homeworld   string       `json:"homeworld"`
 	VehicleURLs []vehicleURL `json:"vehicles"`
-	Created     string       `json:"created"`
-	Edited      string       `json:"edited"`
+	Created     time.Time    `json:"created"`
+	Edited      time.Time    `json:"edited"`
 	URL         string       `json:"url"`
 }
 
