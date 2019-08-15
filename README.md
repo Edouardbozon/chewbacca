@@ -10,19 +10,14 @@ This means for example that we could swap out PostgreSQL for MySQL without affec
 
 ### Prerequisites
 
-- Docker CE >= 18.09.x
-- Docker compose >= 1.23.x
-
-### Build the app
-
-```bash
-make build
-```
+- Docker CE 18.09.x
+- Docker compose 1.23.x
+- Go 1.10.x
 
 ### Run the app
 
 ```bash
-make start
+make start -j2
 ```
 
-Browse to [localhost:8080](http://localhost:8080) :rainbow:
+Browse to [localhost:8080](http://localhost:8081) :rainbow:

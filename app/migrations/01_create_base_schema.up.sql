@@ -1,6 +1,6 @@
 CREATE TABLE vehicles (
   id                      serial PRIMARY KEY,
-  length                  numeric NOT NULL,
+  length                  integer NOT NULL,
   passengers              integer NOT NULL,
   crew                    integer NOT NULL,
   name                    text NOT NULL,

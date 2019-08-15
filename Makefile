@@ -1,5 +1,7 @@
-build:
-	docker build -t chewbacca-server .
+start: start-db start-server
 
-start:
+start-db:
 	docker-compose up
+
+start-server:
+	go run main.go
