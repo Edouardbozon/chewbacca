@@ -19,13 +19,14 @@ func main() {
 	pwd := os.Getenv("APP_DB_PASSWORD")
 	db := os.Getenv("APP_DB_NAME")
 	host := os.Getenv("APP_DB_HOST")
+	port := os.Getenv("APP_PORT")
 
 	client := &postgres.Client{}
 	client.Open(username, pwd, db, host)
 
 	defer client.DB.Close()
 
-	app := http.NewServer()
+	app := http.NewServer(port)
 
 	app.Handler.CharacterHandler.CharacterService = &postgres.CharacterService{DB: client.DB}
 	app.Handler.VehicleHandler.VehicleService = &postgres.VehicleService{DB: client.DB}

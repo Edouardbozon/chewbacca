@@ -20,4 +20,4 @@ This means for example that we could swap out PostgreSQL for MySQL without affec
 make start -j2
 ```
 
-Browse to [localhost:8080](http://localhost:8081) :rainbow:
+Browse to [localhost:8081](http://localhost:8081) :rainbow:

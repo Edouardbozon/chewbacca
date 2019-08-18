@@ -1,12 +1,10 @@
 package http
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 )
-
-// DefaultAddr is the default bind address.
-const DefaultAddr = ":8081"
 
 // Server represents an HTTP server.type
 type Server struct {
@@ -15,9 +13,9 @@ type Server struct {
 }
 
 // NewServer returns a new instance of Server.
-func NewServer() *Server {
+func NewServer(port string) *Server {
 	s := &Server{
-		Addr:    DefaultAddr,
+		Addr:    fmt.Sprintf(":%s", port),
 		Handler: NewHandler(),
 	}
 
@@ -26,6 +24,6 @@ func NewServer() *Server {
 
 // ListenAndServe start the server
 func (s *Server) ListenAndServe() {
-	log.Printf("Listening %s", s.Addr)
+	log.Printf("[HTTP server] listening at %s", s.Addr)
 	log.Fatal(http.ListenAndServe(s.Addr, s.Handler.Router))
 }
