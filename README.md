@@ -1,6 +1,6 @@
 # Chewbacca
 
-Example app written using Go and React that follows the Standard Package Layout application design.
+Example app written using Go and React that follows the Standard Package Layout.
 
 - The domain is isolated in the root `app` package and does not depend on any other package.
 - Sub-packages such as `http` are adapters between domain and our implementation.
@@ -14,6 +14,7 @@ This means for example that we could swap out PostgreSQL for MySQL without affec
 - Docker compose 1.23.x
 - Go 1.10.x
 - Node 10.15.x
+- Yarn 1.17.x
 
 ### Run the app
 
@@ -21,4 +22,4 @@ This means for example that we could swap out PostgreSQL for MySQL without affec
 make start -j3
 ```
 
-Browse to [localhost:8081](http://localhost:8081) :rainbow:
+Browse to [localhost:3000](http://localhost:3000) :rainbow:
