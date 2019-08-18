@@ -13,11 +13,12 @@ This means for example that we could swap out PostgreSQL for MySQL without affec
 - Docker CE 18.09.x
 - Docker compose 1.23.x
 - Go 1.10.x
+- Node 10.15.x
 
 ### Run the app
 
 ```bash
-make start -j2
+make start -j3
 ```
 
 Browse to [localhost:8081](http://localhost:8081) :rainbow:
